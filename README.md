@@ -4,8 +4,8 @@ Custom Docker image with Nginx and ModSecurity (OWASP CRS) for enhanced web appl
 
 ### Features
 
-- Nginx 1.28.0 with HTTP/3 (QUIC) support
-- ModSecurity v3 with OWASP Core Rule Set (CRS)
+- Nginx 1.29.3 with HTTP/3 (QUIC) support
+- ModSecurity v3 with OWASP Core Rule Set (CRS) v3.3
 - Pre-configured security headers
 - Optimized TLS configuration
 - Built-in protection against common web attacks

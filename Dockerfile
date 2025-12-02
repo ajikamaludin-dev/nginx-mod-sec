@@ -1,7 +1,7 @@
 # Dockerfile for Nginx with Debian, HTTP/3 (QUIC), and ModSecurity
 FROM debian:bookworm as builder
 
-ARG NGINX_VERSION="1.28.0"
+ARG NGINX_VERSION="1.29.3"
 ARG OPENSSL_VERSION="3.5.0"
 
 # Arguments untuk versi dan build options
@@ -188,6 +188,8 @@ COPY --from=builder /etc/group /etc/group
 RUN sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine On/' /etc/nginx/modsec/modsecurity.conf && \
     echo "Include /etc/nginx/owasp-modsecurity-crs/crs-setup.conf" >> /etc/nginx/modsec/modsecurity.conf && \
     echo "Include /etc/nginx/owasp-modsecurity-crs/rules/*.conf" >> /etc/nginx/modsec/modsecurity.conf
+
+COPY nginx.conf  /etc/nginx/nginx.conf
 
 # Create sample vhost with ModSecurity protection
 RUN mkdir -p /etc/nginx/conf.d
