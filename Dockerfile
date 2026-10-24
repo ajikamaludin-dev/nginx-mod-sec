@@ -8,6 +8,7 @@ ARG OPENSSL_VERSION="3.5.0"
 ARG BUILD_DEPS=" \
     build-essential \
     libpcre2-dev \
+    libpcre3-dev \
     zlib1g-dev \
     libssl-dev \
     openssl \
@@ -40,19 +41,18 @@ RUN rm -rf /var/lib/apt/lists/*
 
 # Download dan extract Nginx source
 WORKDIR /usr/src
-RUN wget --no-check-certificate -q "https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz"
+RUN wget -q "https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz"
 RUN tar -xzf nginx-${NGINX_VERSION}.tar.gz
 RUN rm nginx-${NGINX_VERSION}.tar.gz
 
-RUN wget --no-check-certificate -q "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz"
+RUN wget -q "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz"
 RUN tar -xzf openssl-${OPENSSL_VERSION}.tar.gz
 
 # Build boringssl (required for QUIC)
 WORKDIR /usr/src
-RUN git config --global http.sslVerify false
 RUN git config --global advice.detachedHead false
 
-RUN git clone --recursive https://github.com/cloudflare/quiche
+RUN git clone --recurse-submodules https://github.com/cloudflare/quiche
 
 # RUN mkdir -p /usr/local/boringssl/lib
 # RUN git clone --depth 1 https://github.com/google/boringssl.git
@@ -68,10 +68,8 @@ RUN git clone --recursive https://github.com/cloudflare/quiche
 
 # Build ModSecurity v3
 WORKDIR /usr/src
-RUN git clone --depth 1 -b v3/master --single-branch https://github.com/SpiderLabs/ModSecurity && \
+RUN git clone --branch v3.0.14 --recurse-submodules https://github.com/SpiderLabs/ModSecurity && \
     cd ModSecurity && \
-    git submodule init && \
-    git submodule update && \
     ./build.sh && \
     ./configure && \
     make -j 6 && \
@@ -79,7 +77,7 @@ RUN git clone --depth 1 -b v3/master --single-branch https://github.com/SpiderLa
 
 # Build ModSecurity-nginx connector
 WORKDIR /usr/src
-RUN git clone --depth 1 https://github.com/SpiderLabs/ModSecurity-nginx.git
+RUN git clone --branch v1.0.4 --depth 1 https://github.com/SpiderLabs/ModSecurity-nginx.git
 
 # Build Nginx with all modules
 WORKDIR /usr/src/nginx-${NGINX_VERSION}
@@ -134,7 +132,7 @@ RUN ./configure \
 
 # Download OWASP Core Rule Set
 WORKDIR /etc/nginx
-RUN git clone --depth 1 -b v3.3/master https://github.com/coreruleset/coreruleset /etc/nginx/owasp-modsecurity-crs && \
+RUN git clone --branch v4.25.2 --depth 1 https://github.com/coreruleset/coreruleset /etc/nginx/owasp-modsecurity-crs && \
     mv /etc/nginx/owasp-modsecurity-crs/crs-setup.conf.example /etc/nginx/owasp-modsecurity-crs/crs-setup.conf && \
     mv /etc/nginx/owasp-modsecurity-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf.example \
     /etc/nginx/owasp-modsecurity-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf && \
