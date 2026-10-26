@@ -1,7 +1,7 @@
 # Dockerfile for Nginx with Debian, HTTP/3 (QUIC), and ModSecurity
 FROM debian:bookworm as builder
 
-ARG NGINX_VERSION="1.29.3"
+ARG NGINX_VERSION="1.31.8"
 ARG OPENSSL_VERSION="3.5.0"
 
 # Arguments untuk versi dan build options
@@ -52,7 +52,7 @@ RUN tar -xzf openssl-${OPENSSL_VERSION}.tar.gz
 WORKDIR /usr/src
 RUN git config --global advice.detachedHead false
 
-RUN git clone --recurse-submodules https://github.com/cloudflare/quiche
+RUN git clone --depth 1 --branch 0.30.0 --recurse-submodules --shallow-submodules https://github.com/cloudflare/quiche
 
 # RUN mkdir -p /usr/local/boringssl/lib
 # RUN git clone --depth 1 https://github.com/google/boringssl.git
@@ -68,7 +68,7 @@ RUN git clone --recurse-submodules https://github.com/cloudflare/quiche
 
 # Build ModSecurity v3
 WORKDIR /usr/src
-RUN git clone --branch v3.0.14 --recurse-submodules https://github.com/SpiderLabs/ModSecurity && \
+RUN git clone --branch v3.0.17 --recurse-submodules https://github.com/SpiderLabs/ModSecurity && \
     cd ModSecurity && \
     ./build.sh && \
     ./configure && \
