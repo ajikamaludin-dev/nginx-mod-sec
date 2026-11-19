@@ -1,7 +1,7 @@
 # Dockerfile for Nginx with Debian, HTTP/3 (QUIC), and ModSecurity
 FROM debian:bookworm as builder
 
-ARG NGINX_VERSION="1.31.8"
+ARG NGINX_VERSION="1.31.9"
 ARG OPENSSL_VERSION="3.5.0"
 
 # Arguments untuk versi dan build options
